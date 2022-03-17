@@ -1,4 +1,5 @@
 ﻿using DataLibrary.Commands;
+using DataLibrary.Commands.UpdatePersonCommandHandlers;
 using DataLibrary.Model;
 using DataLibrary.Queries;
 using MediatR;
@@ -41,6 +42,19 @@ namespace MediatR2.Controllers
            var response = await mediator.Send(new CreateNewPerson(person));
             return response == null ? NotFound() : Ok(response);
 
+        }
+
+        [HttpPatch("{id}")]
+        [ProducesResponseType(typeof(PersonModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UpdatePerson([FromRoute] int id, [FromBody] UpdatePersonRequest request)
+        {
+            var result = await mediator.Send(new UpdatePersonCommand(id, request.FirstName, request.LastName));
+
+            if (result == null)
+                return NotFound();
+
+            return Ok(result);
         }
     }
 }
